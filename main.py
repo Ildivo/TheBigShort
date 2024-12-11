@@ -31,10 +31,14 @@ def get_db():
         db.close()
 
 
-def generate_short_url(length=6):
-    """Функция для генерации короткой ссылки из случайных символов"""
+def generate_short_url(db: Session, length=6) -> str:
+    """Функция для генерации уникальной короткой ссылки из случайных символов"""
     chars = string.ascii_letters + string.digits
-    return ''.join(random.choice(chars) for _ in range(length))
+    while True:
+        short_url = ''.join(random.choice(chars) for _ in range(length))
+        # Проверяем, существует ли уже такая короткая ссылка
+        if not db.query(URLMapping).filter(URLMapping.short_url == short_url).first():
+            return short_url
 
 
 def validate_and_format_url(url: str) -> str:
@@ -69,7 +73,7 @@ async def shorten_url(request: Request, db: Session = Depends(get_db)):
         })
 
     # Генерируем уникальную короткую ссылку
-    short_url = generate_short_url()
+    short_url = generate_short_url(db)
 
     # Сохраняем в базе данных
     db.add(URLMapping(original_url=original_url, short_url=short_url))
@@ -93,3 +97,4 @@ def redirect_url(short_url: str, db: Session = Depends(get_db)):
 
     # Перенаправляем на оригинальный URL
     return RedirectResponse(mapping.original_url)
+

@@ -1,17 +1,23 @@
+# database.py
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# Подключение к базе данных SQLite
-DATABASE_URL = "sqlite:///./test.db"
+# URL подключения к PostgreSQL
 
-# Создаем соединение с базой данных
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+
+DATABASE_URL = "postgresql://postgres:pass123@localhost/postgres"
+
+# Создаем движок и сессию для работы с базой данных
+engine = create_engine(DATABASE_URL, echo=True)
+
+# Создаем сессионный объект
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Создаем базовый класс для моделей
 Base = declarative_base()
 
+# Функция для инициализации базы данных
 def init_db():
-    # Инициализация базы данных, создание всех таблиц
+    # Создание таблиц, если они не существуют
     Base.metadata.create_all(bind=engine)

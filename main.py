@@ -1,4 +1,3 @@
-# main.py
 from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -13,7 +12,7 @@ from models import URLMapping
 # Инициализация FastAPI приложения
 app = FastAPI()
 
-# Инициализация базы данных
+# Инициализация базы данных PostgreSQL
 init_db()
 
 # Настроим Jinja2 шаблоны
@@ -97,4 +96,3 @@ def redirect_url(short_url: str, db: Session = Depends(get_db)):
 
     # Перенаправляем на оригинальный URL
     return RedirectResponse(mapping.original_url)
-
